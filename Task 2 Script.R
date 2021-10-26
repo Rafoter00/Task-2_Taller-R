@@ -10,3 +10,5 @@ if(!require(pacman)) install.packages(pacman)
 require(pacman)
 p_load(dplyr,data.table)
 print
+
+#Pregunta 1
