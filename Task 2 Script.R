@@ -22,8 +22,11 @@ for (x in c("2017/","2018/","2019/","2020/")) {
 } #Pego todos los patterns de los archivos en una lista
 patterns = patterns %>% unlist() # vuelvo la lista patterns en vector de valores para poder meterlos en el siguiente vector
 
-chip=list() # Genero una lista llamada chip
+#Otra forma de hacerlo
+patterns = lapply(2017:2020, function(x) list.files(paste0("task_2 /data/input/",x),full.names=T))%>%unlist
 
+
+chip=list() # Genero una lista llamada chip
 for (i in 1:length(patterns)){
   chip[[i]]<-read_excel(patterns[i])
 } # Utilizo el loop for para importar las bases de datos de las carpetas 2017,2018,2019,2020
@@ -42,6 +45,8 @@ Extractor=function(i){{ #Genero funcion Extractor
   }
 lapply(c(pagos,periodo,nombrecodigo), print)
 }    
+
+
    
 Extractor(i=4)#Ejemplo para base de datos 4 de chip
 Extractor(i=36)#Ejemplo para base de datos 36 de chip
@@ -49,7 +54,29 @@ Extractor(i=78)#Ejemplo para base de datos 78 de chip
 
 #En este caso si quisieramos extraer la informacion sobre el pago de otra variable tocaria cambiar el la fila en el primer argumento de la funcion
 
+#Otra forma mas elegante de hacerlo
+
+Extractor_2=function(i,tipo_rubro){{ #Genero funcion Extractor
+  lista_n = chip[[i]] 
+  colnames(lista_n) = lista_n[7,]
+  P= lista_n %>% subset(NOMBRE==tipo_rubro) %>% select(`PAGOS(Pesos)`)
+  pagos=paste("pagos =",P)
+}
+  {N=colnames(chip[[i]])[1]#Referencia de dato del codigo y nombre del municipio
+    nombrecodigo=paste("codigo y nombre de municipio =",N)
+  }
+  
+  {PI=chip[[i]][2,1]#Referencia de dato del periodo de la informacion
+    periodo=paste("periodo de informacion =",PI)
+  }
+  lapply(c(pagos,periodo,nombrecodigo), print)
+}    
+
+Extractor_2(i=4,tipo_rubro="EDUCACIÓN")
+Extractor_2(i=63,tipo_rubro="SALUD")
+
 #Pregunta 3
 chip_valores=c(1:length(chip))# Genero un vector con la longitud de la lista
 data = lapply(chip_valores,function(i) Extractor(i))#aplico lapply para generar lista con la informacion de la funcion Extraer para todos los elementos de la lista
 
+data[3]#Saco la informacion para la lista 3 
